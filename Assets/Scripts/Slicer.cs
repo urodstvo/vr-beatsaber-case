@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
+using System.Collections;
 using EzySlice;
 
 public class SimpleSlicer : MonoBehaviour
 {
+    [Header("Audio Settings")]
+    public AudioSource cutSound;
+    public AudioClip cutClip;
+
     [Header("Slice Settings")]
     public Material materialAfterSlice;
     public LayerMask sliceMask;
@@ -168,10 +173,22 @@ public class SimpleSlicer : MonoBehaviour
             SetupSlicedPart(lowerHull);
 
             AddSliceForce(upperHull, lowerHull);
+            PlaySliceSound();
             Destroy(original);
 
             Debug.Log($"Successfully sliced {original.name}");
         }
+    }
+
+    IEnumerator DestroyAfterPlay(AudioSource src)
+    {
+        yield return new WaitForSeconds(src.clip.length + 0.1f);
+        Destroy(src);
+    }
+
+    void PlaySliceSound()
+    {
+        cutSound.PlayOneShot(cutClip);
     }
 
     void SetupSlicedPart(GameObject slicedPart)
